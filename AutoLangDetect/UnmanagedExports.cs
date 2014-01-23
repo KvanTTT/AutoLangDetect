@@ -2,11 +2,36 @@
 using System.Runtime.InteropServices;
 using NppPluginNET;
 using NppPlugin.DllExport;
+using System.Windows.Forms;
+using System.Text;
+using System.Linq;
+using System.Reflection;
+using System.IO;
+using System.Collections.Generic;
+using System.Threading;
 
 namespace AutoLangDetect
 {
     class UnmanagedExports
     {
+		static List<string> _events;
+		static NppMsg[] _nppMsgs;
+		static SciMsg[] _sciMsgs;
+
+		static UnmanagedExports()
+		{
+			try
+			{
+				_events = new List<string>();
+				_nppMsgs = (NppMsg[])Enum.GetValues(typeof(NppMsg));
+				_sciMsgs = (SciMsg[])Enum.GetValues(typeof(SciMsg));
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.ToString());
+			}
+		}
+
         [DllExport(CallingConvention=CallingConvention.Cdecl)]
         static bool isUnicode()
         {
@@ -16,7 +41,7 @@ namespace AutoLangDetect
         [DllExport(CallingConvention = CallingConvention.Cdecl)]
         static void setInfo(NppData notepadPlusData)
         {
-            PluginBase.nppData = notepadPlusData;
+			PluginBase.nppData = notepadPlusData;
             Main.CommandMenuInit();
         }
 
@@ -46,16 +71,54 @@ namespace AutoLangDetect
         static void beNotified(IntPtr notifyCode)
         {
             SCNotification nc = (SCNotification)Marshal.PtrToStructure(notifyCode, typeof(SCNotification));
-            if (nc.nmhdr.code == (uint)NppMsg.NPPN_TBMODIFICATION)
-            {
-                PluginBase._funcItems.RefreshItems();
-                Main.SetToolBarIcon();
-            }
-            else if (nc.nmhdr.code == (uint)NppMsg.NPPN_SHUTDOWN)
-            {
-                Main.PluginCleanUp();
-                Marshal.FreeHGlobal(_ptrPluginName);
-            }
+
+			var nppMsg = _nppMsgs.Where(msg => (uint)msg == nc.nmhdr.code);
+			if (nppMsg.Count() != 0)
+				_events.Add(DateTime.Now.ToShortTimeString() + " " + nppMsg.First() + " " + "Event code: " + nc.nmhdr.code);
+			else
+			{
+				var sciMsg = _sciMsgs.Where(msg => (uint)msg == nc.nmhdr.code);
+				if (sciMsg.Count() != 0)
+					_events.Add(DateTime.Now.ToShortTimeString() + " " + sciMsg.First() + " " + "Event code: " + nc.nmhdr.code);
+				else
+				{
+					_events.Add(DateTime.Now.ToShortTimeString() + " " + "Event code: " + nc.nmhdr.code);
+				}
+			}
+
+			switch (nc.nmhdr.code)
+			{
+				case (uint)NppMsg.NPPN_FILEOPENED:
+					NotificationHandler.FileOpened();
+					break;
+				case 4294967294:
+					// 4294966744 - tab before switching
+					// 4294966745 - tab after switching
+					// 4294967294 - tab has been swicthed
+					NotificationHandler.TabSwitched();
+					break;
+				case (uint)NppMsg.NPPN_BUFFERACTIVATED:
+					//NotificationHandler.BufferActivated();
+					break;
+				case (uint)NppMsg.NPPN_FILEBEFORECLOSE:
+					//MessageBox.Show("NPPN_FILEBEFORECLOSE " + Utils.GetFullCurrentFileName());
+					break;
+				case (uint)NppMsg.NPPN_DOCORDERCHANGED:
+					//MessageBox.Show("NPPN_DOCORDERCHANGED");
+					break;
+				case (uint)SciMsg.SCN_MODIFIED:
+					NotificationHandler.FileModified();
+					break;
+				case (uint)NppMsg.NPPN_TBMODIFICATION:
+					PluginBase._funcItems.RefreshItems();
+					Main.SetToolBarIcon();
+					break;
+				case (uint)NppMsg.NPPN_SHUTDOWN:
+					File.WriteAllLines(@"C:\Users\IvanKoch\AppData\Roaming\Notepad++\plugins\AutoLangDetect.log", _events.ToArray());
+					Main.PluginCleanUp();
+					Marshal.FreeHGlobal(_ptrPluginName);
+					break;
+			}
         }
     }
 }

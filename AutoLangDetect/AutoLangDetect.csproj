@@ -60,23 +60,24 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DllExport\DllExportAttribute.cs" />
+    <Compile Include="FileNameViewInd.cs" />
     <Compile Include="Forms\frmAbout.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\frmAbout.Designer.cs">
       <DependentUpon>frmAbout.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\frmAssociateExtension.cs">
+    <Compile Include="Forms\dlgAssociateExtension.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\frmAssociateExtension.Designer.cs">
-      <DependentUpon>frmAssociateExtension.cs</DependentUpon>
+    <Compile Include="Forms\dlgAssociateExtension.Designer.cs">
+      <DependentUpon>dlgAssociateExtension.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\frmDetectLanguage.cs">
+    <Compile Include="Forms\dlgDetectLanguage.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\frmDetectLanguage.Designer.cs">
-      <DependentUpon>frmDetectLanguage.cs</DependentUpon>
+    <Compile Include="Forms\dlgDetectLanguage.Designer.cs">
+      <DependentUpon>dlgDetectLanguage.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\frmSettings.cs">
       <SubType>Form</SubType>
@@ -84,10 +85,13 @@
     <Compile Include="Forms\frmSettings.Designer.cs">
       <DependentUpon>frmSettings.cs</DependentUpon>
     </Compile>
+    <Compile Include="LangDetector.cs" />
     <Compile Include="LangParser.cs" />
     <Compile Include="Main.cs" />
+    <Compile Include="NotificationHandler.cs" />
     <Compile Include="NppLanguage.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="Utils.cs" />
     <Compile Include="XmlMappingTypes.cs" />
     <Compile Include="NppPluginNETBase.cs" />
     <Compile Include="NppPluginNETHelper.cs" />
@@ -103,11 +107,11 @@
     <EmbeddedResource Include="Forms\frmAbout.resx">
       <DependentUpon>frmAbout.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\frmAssociateExtension.resx">
-      <DependentUpon>frmAssociateExtension.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\dlgAssociateExtension.resx">
+      <DependentUpon>dlgAssociateExtension.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\frmDetectLanguage.resx">
-      <DependentUpon>frmDetectLanguage.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\dlgDetectLanguage.resx">
+      <DependentUpon>dlgDetectLanguage.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\frmSettings.resx">
       <DependentUpon>frmSettings.cs</DependentUpon>
@@ -130,7 +134,6 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildProjectDirectory)\DllExport\NppPlugin.DllExport.targets" />
   <PropertyGroup>

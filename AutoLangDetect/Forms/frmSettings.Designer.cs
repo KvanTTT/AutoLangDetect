@@ -29,7 +29,6 @@
 		private void InitializeComponent()
 		{
 			this.cbDetectLanguageAutomatically = new System.Windows.Forms.CheckBox();
-			this.cbCheckUnknownExtensionFiles = new System.Windows.Forms.CheckBox();
 			this.cbCheckEmptyExtensionFiles = new System.Windows.Forms.CheckBox();
 			this.btnOk = new System.Windows.Forms.Button();
 			this.cbShowDetectLanguageDialog = new System.Windows.Forms.CheckBox();
@@ -49,24 +48,12 @@
 			this.cbDetectLanguageAutomatically.Text = "Detect language automatically";
 			this.cbDetectLanguageAutomatically.UseVisualStyleBackColor = true;
 			// 
-			// cbCheckUnknownExtensionFiles
-			// 
-			this.cbCheckUnknownExtensionFiles.AutoSize = true;
-			this.cbCheckUnknownExtensionFiles.Checked = true;
-			this.cbCheckUnknownExtensionFiles.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.cbCheckUnknownExtensionFiles.Location = new System.Drawing.Point(12, 35);
-			this.cbCheckUnknownExtensionFiles.Name = "cbCheckUnknownExtensionFiles";
-			this.cbCheckUnknownExtensionFiles.Size = new System.Drawing.Size(167, 17);
-			this.cbCheckUnknownExtensionFiles.TabIndex = 1;
-			this.cbCheckUnknownExtensionFiles.Text = "Check unknow extension files";
-			this.cbCheckUnknownExtensionFiles.UseVisualStyleBackColor = true;
-			// 
 			// cbCheckEmptyExtensionFiles
 			// 
 			this.cbCheckEmptyExtensionFiles.AutoSize = true;
 			this.cbCheckEmptyExtensionFiles.Checked = true;
 			this.cbCheckEmptyExtensionFiles.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.cbCheckEmptyExtensionFiles.Location = new System.Drawing.Point(12, 58);
+			this.cbCheckEmptyExtensionFiles.Location = new System.Drawing.Point(12, 35);
 			this.cbCheckEmptyExtensionFiles.Name = "cbCheckEmptyExtensionFiles";
 			this.cbCheckEmptyExtensionFiles.Size = new System.Drawing.Size(157, 17);
 			this.cbCheckEmptyExtensionFiles.TabIndex = 2;
@@ -75,7 +62,7 @@
 			// 
 			// btnOk
 			// 
-			this.btnOk.Location = new System.Drawing.Point(36, 152);
+			this.btnOk.Location = new System.Drawing.Point(27, 116);
 			this.btnOk.Name = "btnOk";
 			this.btnOk.Size = new System.Drawing.Size(75, 23);
 			this.btnOk.TabIndex = 3;
@@ -88,7 +75,7 @@
 			this.cbShowDetectLanguageDialog.AutoSize = true;
 			this.cbShowDetectLanguageDialog.Checked = true;
 			this.cbShowDetectLanguageDialog.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.cbShowDetectLanguageDialog.Location = new System.Drawing.Point(12, 95);
+			this.cbShowDetectLanguageDialog.Location = new System.Drawing.Point(12, 58);
 			this.cbShowDetectLanguageDialog.Name = "cbShowDetectLanguageDialog";
 			this.cbShowDetectLanguageDialog.Size = new System.Drawing.Size(164, 17);
 			this.cbShowDetectLanguageDialog.TabIndex = 4;
@@ -100,7 +87,7 @@
 			this.cbShowAssociateExtensionDialog.AutoSize = true;
 			this.cbShowAssociateExtensionDialog.Checked = true;
 			this.cbShowAssociateExtensionDialog.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.cbShowAssociateExtensionDialog.Location = new System.Drawing.Point(12, 118);
+			this.cbShowAssociateExtensionDialog.Location = new System.Drawing.Point(12, 81);
 			this.cbShowAssociateExtensionDialog.Name = "cbShowAssociateExtensionDialog";
 			this.cbShowAssociateExtensionDialog.Size = new System.Drawing.Size(180, 17);
 			this.cbShowAssociateExtensionDialog.TabIndex = 5;
@@ -109,7 +96,7 @@
 			// 
 			// btnCancel
 			// 
-			this.btnCancel.Location = new System.Drawing.Point(117, 152);
+			this.btnCancel.Location = new System.Drawing.Point(108, 116);
 			this.btnCancel.Name = "btnCancel";
 			this.btnCancel.Size = new System.Drawing.Size(75, 23);
 			this.btnCancel.TabIndex = 6;
@@ -121,13 +108,12 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(222, 187);
+			this.ClientSize = new System.Drawing.Size(222, 155);
 			this.Controls.Add(this.btnCancel);
 			this.Controls.Add(this.cbShowAssociateExtensionDialog);
 			this.Controls.Add(this.cbShowDetectLanguageDialog);
 			this.Controls.Add(this.btnOk);
 			this.Controls.Add(this.cbCheckEmptyExtensionFiles);
-			this.Controls.Add(this.cbCheckUnknownExtensionFiles);
 			this.Controls.Add(this.cbDetectLanguageAutomatically);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
 			this.MaximizeBox = false;
@@ -143,7 +129,6 @@
 		#endregion
 
 		private System.Windows.Forms.CheckBox cbDetectLanguageAutomatically;
-		private System.Windows.Forms.CheckBox cbCheckUnknownExtensionFiles;
 		private System.Windows.Forms.CheckBox cbCheckEmptyExtensionFiles;
 		private System.Windows.Forms.Button btnOk;
 		private System.Windows.Forms.CheckBox cbShowDetectLanguageDialog;

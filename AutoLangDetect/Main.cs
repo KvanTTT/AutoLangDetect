@@ -7,6 +7,7 @@ using System.Text;
 using System.Windows.Forms;
 using NppPluginNET;
 using System.Reflection;
+using System.Collections.Generic;
 
 namespace AutoLangDetect
 {
@@ -15,17 +16,14 @@ namespace AutoLangDetect
 		#region " Fields "
 		
 		internal const string PluginName = "AutoLangDetect";
-		
 		internal static string IniFileName = null;
+		internal static string LangsFileName = null;
 
 		internal static Settings Settings = new Settings();
+		internal static LangDetector LangDetector = new LangDetector();
 
-		internal static LangParser LangParser;
-
-		static int idMyDlg = -1;
-		
+		static int detectLanguageMenuId;
 		static Bitmap tbBmp = Properties.Resources.star;
-		
 		static Bitmap tbBmp_tbTab = Properties.Resources.star_bmp;
 		
 		#endregion
@@ -43,32 +41,34 @@ namespace AutoLangDetect
 					Directory.CreateDirectory(IniFilePath);
 				IniFileName = Path.Combine(IniFilePath, PluginName + ".ini");
 
-				string langsPath = Path.Combine(IniFilePath, @"..\..\langs.xml");
-				string langs = File.ReadAllText(langsPath);
-				LangParser = new LangParser();
-				LangParser.Parse(langs);
+				LangsFileName = Path.Combine(IniFilePath, @"..\..\langs.xml");
+				string encoding;
+				var langs = LangParser.Deserialize(File.ReadAllText(LangsFileName), out encoding);
+				LangDetector.InitLanguages(langs, encoding);
 
 				LoadSettings();
 
-				PluginBase.SetCommand(0, "Detect Language", DetectLanguage, new ShortcutKey(true, true, false, Keys.NumPad5));
-				PluginBase.SetCommand(1, "Settings", OpenSettingWindow);
-				PluginBase.SetCommand(2, "About", OpenAboutWindow);
-				idMyDlg = 1;
+				detectLanguageMenuId = 0;
+				PluginBase.SetCommand(detectLanguageMenuId, "Detect Language", DetectLanguage);
+				PluginBase.SetCommand(1, "Associate Extension", AssociateExtension);
+				PluginBase.SetCommand(2, "Settings", OpenSettingWindow);
+				PluginBase.SetCommand(3, "About", OpenAboutWindow);
+				PluginBase.SetCommand(4, "Test", Test);
 			}
 			catch (Exception ex)
 			{
-				MessageBox.Show(ex.Message);
+				MessageBox.Show(ex.ToString());
 			}
 		}
 
 		internal static void SetToolBarIcon()
 		{
-			toolbarIcons tbIcons = new toolbarIcons();
+			/*toolbarIcons tbIcons = new toolbarIcons();
 			tbIcons.hToolbarBmp = tbBmp.GetHbitmap();
 			IntPtr pTbIcons = Marshal.AllocHGlobal(Marshal.SizeOf(tbIcons));
 			Marshal.StructureToPtr(tbIcons, pTbIcons, false);
-			Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_ADDTOOLBARICON, PluginBase._funcItems.Items[idMyDlg]._cmdID, pTbIcons);
-			Marshal.FreeHGlobal(pTbIcons);
+			Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_ADDTOOLBARICON, PluginBase._funcItems.Items[detectLanguageMenuId]._cmdID, pTbIcons);
+			Marshal.FreeHGlobal(pTbIcons);*/
 		}
 
 		internal static void PluginCleanUp()
@@ -81,21 +81,38 @@ namespace AutoLangDetect
 
 		internal static void DetectLanguage()
 		{
-			MessageBox.Show("Language detected");
+			if (Settings.ShowDetectLanguageDialog)
+			{
+				var dlgDetectLanguage = new dlgDetectLanguage(Utils.GetFullCurrentFileName(), Utils.GetCurrentFileText());
+				dlgDetectLanguage.ShowDialog();
+			}
+		}
+
+		internal static void AssociateExtension()
+		{
+			var dlgAssociateExtension = new dlgAssociateExtension(Utils.GetFullCurrentFileName(), Utils.GetCurrentFileText(), Utils.GetOpenedFiles());
+			dlgAssociateExtension.ShowDialog();
 		}
 
 		internal static void OpenSettingWindow()
 		{
 			var frmSettings = new frmSettings();
-			frmSettings.Show();
+			frmSettings.ShowDialog();
 		}
 
 		internal static void OpenAboutWindow()
 		{
 			var frmAbout = new frmAbout();
-			frmAbout.Show();
+			frmAbout.ShowDialog();
 		}
-		
+
+		internal static void Test()
+		{
+			Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_ACTIVATEDOC, 1, 1);
+			//MessageBox.Show(string.Join(",", Utils.GetOpenedFiles()));
+			Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_SETCURRENTLANGTYPE, 0, (int)LangType.L_XML);
+		}
+
 		#endregion
 
 		#region Settings
@@ -104,28 +121,26 @@ namespace AutoLangDetect
 		{
 			Settings.DetectLanguageAutomatically =
 				Win32.GetPrivateProfileInt("Settings", "DetectLanguageAutomatically", 1, Main.IniFileName) != 0;
-			Settings.CheckUnknownExtensionFiles =
-				Win32.GetPrivateProfileInt("Settings", "CheckUnknownExtension", 1, Main.IniFileName) != 0;
 			Settings.CheckEmptyExtensionFiles =
 				Win32.GetPrivateProfileInt("Settings", "CheckEmptyExtension", 1, Main.IniFileName) != 0;
 			Settings.ShowDetectLanguageDialog =
 				Win32.GetPrivateProfileInt("Settings", "ShowDetectLanguageDialog", 1, Main.IniFileName) != 0;
-			Settings.ShowAssociateExtensionDialog = 
-				Win32.GetPrivateProfileInt("Settings", "ShowAssociateExtensionDialog", 1, Main.IniFileName) != 0;
 		}
 
 		internal static void SaveSettings()
 		{
 			Win32.WritePrivateProfileString("Settings", "DetectLanguageAutomatically",
 				Convert.ToInt32(Settings.DetectLanguageAutomatically).ToString(), Main.IniFileName);
-			Win32.WritePrivateProfileString("Settings", "CheckUnknownExtension",
-				Convert.ToInt32(Settings.CheckUnknownExtensionFiles).ToString(), Main.IniFileName);
 			Win32.WritePrivateProfileString("Settings", "CheckEmptyExtension",
 				Convert.ToInt32(Settings.CheckEmptyExtensionFiles).ToString(), Main.IniFileName);
 			Win32.WritePrivateProfileString("Settings", "ShowDetectLanguageDialog",
 				Convert.ToInt32(Settings.ShowDetectLanguageDialog).ToString(), Main.IniFileName);
-			Win32.WritePrivateProfileString("Settings", "ShowAssociateExtensionDialog",
-				Convert.ToInt32(Settings.ShowAssociateExtensionDialog).ToString(), Main.IniFileName);
+		}
+
+		internal static void SaveLangs()
+		{
+			string langsData = LangParser.Serialize(LangDetector.Languages, LangDetector.Encoding);
+			File.WriteAllText(LangsFileName, langsData);
 		}
 
 		#endregion

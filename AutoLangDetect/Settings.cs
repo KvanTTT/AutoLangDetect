@@ -9,12 +9,8 @@ namespace AutoLangDetect
 	{
 		public bool DetectLanguageAutomatically { get; set; }
 
-		public bool CheckUnknownExtensionFiles { get; set; }
-
 		public bool CheckEmptyExtensionFiles { get; set; }
 
 		public bool ShowDetectLanguageDialog { get; set; }
-
-		public bool ShowAssociateExtensionDialog { get; set; }
 	}
 }

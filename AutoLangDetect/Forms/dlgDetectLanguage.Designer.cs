@@ -1,6 +1,6 @@
-﻿namespace AutoLangDetect.Forms
+﻿namespace AutoLangDetect
 {
-	partial class frmDetectLanguage
+	partial class dlgDetectLanguage
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -31,23 +31,24 @@
 			this.cmbLanguage = new System.Windows.Forms.ComboBox();
 			this.btnYes = new System.Windows.Forms.Button();
 			this.btnNo = new System.Windows.Forms.Button();
-			this.label2 = new System.Windows.Forms.Label();
+			this.lblQuestion = new System.Windows.Forms.Label();
 			this.cbShowDialogEveryTime = new System.Windows.Forms.CheckBox();
 			this.SuspendLayout();
 			// 
 			// cmbLanguage
 			// 
 			this.cmbLanguage.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.cmbLanguage.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
 			this.cmbLanguage.FormattingEnabled = true;
-			this.cmbLanguage.Location = new System.Drawing.Point(250, 11);
+			this.cmbLanguage.Location = new System.Drawing.Point(15, 37);
 			this.cmbLanguage.Name = "cmbLanguage";
-			this.cmbLanguage.Size = new System.Drawing.Size(148, 21);
+			this.cmbLanguage.Size = new System.Drawing.Size(337, 24);
 			this.cmbLanguage.TabIndex = 0;
-			this.cmbLanguage.SelectedIndexChanged += new System.EventHandler(this.cmbLanguage_SelectedIndexChanged);
 			// 
 			// btnYes
 			// 
-			this.btnYes.Location = new System.Drawing.Point(140, 43);
+			this.btnYes.DialogResult = System.Windows.Forms.DialogResult.Yes;
+			this.btnYes.Location = new System.Drawing.Point(108, 73);
 			this.btnYes.Name = "btnYes";
 			this.btnYes.Size = new System.Drawing.Size(75, 23);
 			this.btnYes.TabIndex = 2;
@@ -57,7 +58,8 @@
 			// 
 			// btnNo
 			// 
-			this.btnNo.Location = new System.Drawing.Point(221, 43);
+			this.btnNo.DialogResult = System.Windows.Forms.DialogResult.No;
+			this.btnNo.Location = new System.Drawing.Point(189, 73);
 			this.btnNo.Name = "btnNo";
 			this.btnNo.Size = new System.Drawing.Size(75, 23);
 			this.btnNo.TabIndex = 3;
@@ -65,41 +67,42 @@
 			this.btnNo.UseVisualStyleBackColor = true;
 			this.btnNo.Click += new System.EventHandler(this.btnNo_Click);
 			// 
-			// label2
+			// lblQuestion
 			// 
-			this.label2.AutoSize = true;
-			this.label2.Location = new System.Drawing.Point(12, 14);
-			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(232, 13);
-			this.label2.TabIndex = 4;
-			this.label2.Text = "Associate inserted text with following language?";
+			this.lblQuestion.AutoSize = true;
+			this.lblQuestion.Location = new System.Drawing.Point(12, 14);
+			this.lblQuestion.Name = "lblQuestion";
+			this.lblQuestion.Size = new System.Drawing.Size(316, 13);
+			this.lblQuestion.TabIndex = 4;
+			this.lblQuestion.Text = "Would you like to associate inserted text with following language?";
 			// 
 			// cbShowDialogEveryTime
 			// 
 			this.cbShowDialogEveryTime.AutoSize = true;
 			this.cbShowDialogEveryTime.Checked = true;
 			this.cbShowDialogEveryTime.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.cbShowDialogEveryTime.Location = new System.Drawing.Point(15, 80);
+			this.cbShowDialogEveryTime.Location = new System.Drawing.Point(15, 106);
 			this.cbShowDialogEveryTime.Name = "cbShowDialogEveryTime";
 			this.cbShowDialogEveryTime.Size = new System.Drawing.Size(154, 17);
 			this.cbShowDialogEveryTime.TabIndex = 5;
 			this.cbShowDialogEveryTime.Text = "Show this dialog every time";
 			this.cbShowDialogEveryTime.UseVisualStyleBackColor = true;
+			this.cbShowDialogEveryTime.CheckedChanged += new System.EventHandler(this.cbShowDialogEveryTime_CheckedChanged);
 			// 
-			// frmDetectLanguage
+			// dlgDetectLanguage
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(417, 112);
+			this.ClientSize = new System.Drawing.Size(364, 136);
 			this.Controls.Add(this.cbShowDialogEveryTime);
-			this.Controls.Add(this.label2);
+			this.Controls.Add(this.lblQuestion);
 			this.Controls.Add(this.btnNo);
 			this.Controls.Add(this.btnYes);
 			this.Controls.Add(this.cmbLanguage);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
-			this.Name = "frmDetectLanguage";
+			this.Name = "dlgDetectLanguage";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Detect Language";
 			this.ResumeLayout(false);
@@ -112,7 +115,7 @@
 		private System.Windows.Forms.ComboBox cmbLanguage;
 		private System.Windows.Forms.Button btnYes;
 		private System.Windows.Forms.Button btnNo;
-		private System.Windows.Forms.Label label2;
+		private System.Windows.Forms.Label lblQuestion;
 		private System.Windows.Forms.CheckBox cbShowDialogEveryTime;
 	}
 }

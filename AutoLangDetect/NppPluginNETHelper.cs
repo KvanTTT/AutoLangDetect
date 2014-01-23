@@ -196,7 +196,7 @@ namespace NppPluginNET
     {
         L_TEXT, L_PHP , L_C, L_CPP, L_CS, L_OBJC, L_JAVA, L_RC,
         L_HTML, L_XML, L_MAKEFILE, L_PASCAL, L_BATCH, L_INI, L_ASCII, L_USER,
-        L_ASP, L_SQL, L_VB, L_JS, L_CSS, L_PERL, L_PYTHON, L_LUA,
+        L_ASP, L_SQL, L_VB,L_JS, L_CSS, L_PERL, L_PYTHON, L_LUA,
         L_TEX, L_FORTRAN, L_BASH, L_FLASH, L_NSIS, L_TCL, L_LISP, L_SCHEME,
         L_ASM, L_DIFF, L_PROPS, L_PS, L_RUBY, L_SMALLTALK, L_VHDL, L_KIX, L_AU3,
         L_CAML, L_ADA, L_VERILOG, L_MATLAB, L_HASKELL, L_INNO, L_SEARCHRESULT,
@@ -1964,7 +1964,27 @@ namespace NppPluginNET
         }
 
         public IntPtr NativePointer { get { _initNativeStruct(); return _ptrSciTextRange; } }
-        public string lpstrText { get { _readNativeStruct(); return Marshal.PtrToStringAnsi(_sciTextRange.lpstrText); } }
+        
+		public string lpstrText { get { _readNativeStruct(); return Marshal.PtrToStringAnsi(_sciTextRange.lpstrText); } }
+		
+		public string lpstrTextUni { get { _readNativeStruct(); return Marshal.PtrToStringUni(_sciTextRange.lpstrText); } }
+		
+		public string lpstrTextUtf8
+		{
+			get
+			{
+				_readNativeStruct();
+				int len = 0;
+				while (Marshal.ReadByte(_sciTextRange.lpstrText, len) != 0)
+					++len;
+				if (len == 0)
+					return string.Empty;
+				byte[] buffer = new byte[len];
+				Marshal.Copy(_sciTextRange.lpstrText, buffer, 0, buffer.Length);
+				return Encoding.UTF8.GetString(buffer);
+			}
+		}
+
         public Sci_CharacterRange chrg { get { _readNativeStruct(); return _sciTextRange.chrg; } set { _sciTextRange.chrg = value; _initNativeStruct(); } }
         void _initNativeStruct()
         {
