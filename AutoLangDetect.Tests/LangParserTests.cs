@@ -14,11 +14,12 @@ namespace AutoLangDetect.Tests
 		public void SerialzieDeserialize()
 		{
 			string encoding;
-			var langs = LangParser.Deserialize(File.ReadAllText(@"..\..\langs.xml"), out encoding);
+			var langs = LangParser.Deserialize(File.ReadAllText(@"..\..\langs.xml"), File.ReadAllText(@"..\..\stylers.xml"), out encoding);
 			var xml = LangParser.Serialize(langs, encoding);
-			var langs2 = LangParser.Deserialize(xml, out encoding);
+			var langs2 = LangParser.Deserialize(xml, File.ReadAllText(@"..\..\stylers.xml"), out encoding);
 
-			Assert.AreEqual(1, langs.Where(lang => lang.Value.LangType == NppPluginNET.LangType.L_USER).Count());
+			Assert.AreEqual(1, langs.Count(lang => lang.Value.LangType == NppPluginNET.LangType.L_USER));
+			Assert.AreEqual(0, langs.Count(l => string.IsNullOrEmpty(l.Value.Description)));
 
 			foreach (var lang in langs)
 			{

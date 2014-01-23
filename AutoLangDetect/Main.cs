@@ -42,8 +42,9 @@ namespace AutoLangDetect
 				IniFileName = Path.Combine(IniFilePath, PluginName + ".ini");
 
 				LangsFileName = Path.Combine(IniFilePath, @"..\..\langs.xml");
+				var stylersFileName = Path.Combine(IniFilePath, @"..\..\stylers.xml");
 				string encoding;
-				var langs = LangParser.Deserialize(File.ReadAllText(LangsFileName), out encoding);
+				var langs = LangParser.Deserialize(File.ReadAllText(LangsFileName), File.ReadAllText(stylersFileName), out encoding);
 				LangDetector.InitLanguages(langs, encoding);
 
 				LoadSettings();

@@ -54,8 +54,6 @@ namespace AutoLangDetect
 		{
 			SelectedLanguage = lang;
 
-			MessageBox.Show("AddOrUpdateExtension");
-
 			Main.LangDetector.AddOrUpdateExtension(lang.Name, tbExtension.Text);
 			Main.SaveLangs();
 

@@ -19,10 +19,8 @@ namespace AutoLangDetect
 			_langTypes = (LangType[])Enum.GetValues(typeof(LangType));
 		}
 
-		public static Dictionary<string, NppLanguage> Deserialize(string langsData, out string encoding)
+		public static Dictionary<string, NppLanguage> Deserialize(string langsData, string stylesData, out string encoding)
 		{
-			var serializer = new XmlSerializer(typeof(NotepadPlus));
-
 			string s = langsData.Remove(langsData.IndexOf("?>"));
 			int encStart = s.IndexOf("encoding=\"") + "encoding=\"".Length;
 			if (encStart != -1)
@@ -33,11 +31,17 @@ namespace AutoLangDetect
 			else
 				encoding = "";
 
-			NotepadPlus notepadPlus;
+			var langsSerializer = new XmlSerializer(typeof(NotepadPlusLanguages));
+			NotepadPlusLanguages nppXmlLangs;
 			using (TextReader reader = new StringReader(langsData))
-				notepadPlus = (NotepadPlus)serializer.Deserialize(reader);
-			
-			var result = XmlToNppLangs(notepadPlus);
+				nppXmlLangs = (NotepadPlusLanguages)langsSerializer.Deserialize(reader);
+
+			var stylersSerializer = new XmlSerializer(typeof(NotepadPlusStylers));
+			NotepadPlusStylers nppXmlStylers;
+			using (TextReader reader = new StringReader(stylesData))
+				nppXmlStylers = (NotepadPlusStylers)stylersSerializer.Deserialize(reader);
+
+			var result = XmlToNppLangs(nppXmlLangs, nppXmlStylers);
 			return result;
 		}
 
@@ -45,7 +49,7 @@ namespace AutoLangDetect
 		{
 			var xmlType = NppLangsToXml(langs);
 
-			var serializer = new XmlSerializer(typeof(NotepadPlus));
+			var serializer = new XmlSerializer(typeof(NotepadPlusLanguages));
 			StringBuilder result = new StringBuilder();
 			using (XmlWriter writer = XmlWriter.Create(result, new XmlWriterSettings { Indent = true } ))
 			{
@@ -62,19 +66,31 @@ namespace AutoLangDetect
 			return s + str.Substring(ind);
 		}
 
-		private static Dictionary<string, NppLanguage> XmlToNppLangs(NotepadPlus xmlRoot)
+		private static Dictionary<string, NppLanguage> XmlToNppLangs(NotepadPlusLanguages xmlLangs, NotepadPlusStylers xmlStylers)
 		{
-			var result = new Dictionary<string, NppLanguage>(xmlRoot.Languages.Language.Length);
-			foreach (var xmlLang in xmlRoot.Languages.Language)
+			var result = new Dictionary<string, NppLanguage>(xmlLangs.Languages.Length);
+			var splitChars = new char[] { ' ' };
+			foreach (var xmlLang in xmlLangs.Languages)
 			{
 				var lang = new NppLanguage
 				{
 					Name = xmlLang.Name,
-					Extensions = xmlLang.Extension.Split(' ').ToList(),
+					Extensions = xmlLang.Extension.Split(splitChars, StringSplitOptions.RemoveEmptyEntries).ToList(),
 					CommentLine = xmlLang.CommentLine,
 					CommentStart = xmlLang.CommentStart,
-					CommentEnd = xmlLang.CommentEnd
+					CommentEnd = xmlLang.CommentEnd,
 				};
+
+				var lexerType = xmlStylers.LexerStyles.FirstOrDefault(style => style.Name == xmlLang.Name);
+				if (lexerType != null)
+					lang.Description = lexerType.Description;
+				else
+				{
+					if (lang.Name == "normal")
+						lang.Description = "Normal Text";
+					else
+						lang.Description = lang.Name;
+				}
 
 				LangType langType;
 				if (Enum.TryParse("L_" + lang.Name.ToUpperInvariant(), out langType))
@@ -121,18 +137,16 @@ namespace AutoLangDetect
 				Name = UserDefined,
 				LangType = LangType.L_USER,
 				Extensions = new List<string>(),
-				Keywords = new Dictionary<string,List<string>>()
+				Keywords = new Dictionary<string,List<string>>(),
+				Description = "User-Defined"
 			});
 
 			return result;
 		}
 
-		private static NotepadPlus NppLangsToXml(Dictionary<string, NppLanguage> langs)
+		private static NotepadPlusLanguages NppLangsToXml(Dictionary<string, NppLanguage> langs)
 		{
-			NotepadPlus xmlType = new NotepadPlus
-			{
-				Languages = new Languages()
-			};
+			NotepadPlusLanguages xmlType = new NotepadPlusLanguages();
 
 			var xmlLangs = new List<Language>(langs.Count);
 			foreach (var lang in langs)
@@ -167,7 +181,7 @@ namespace AutoLangDetect
 				xmlLangs.Add(xmlLang);
 			}
 
-			xmlType.Languages.Language = xmlLangs.ToArray();
+			xmlType.Languages = xmlLangs.ToArray();
 			return xmlType;
 		}
 	}

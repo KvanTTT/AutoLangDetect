@@ -59,9 +59,9 @@ namespace AutoLangDetect
 		public override string ToString()
 		{
 			if (Extensions == null || Extensions.Count == 0)
-				return Name;
+				return Description;
 			else
-				return string.Format("{0} ({1})", Name, string.Join(", ", Extensions));
+				return string.Format("{0} ({1})", Description, string.Join(", ", Extensions));
 		}
 	}
 }

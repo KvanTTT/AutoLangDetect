@@ -48,13 +48,14 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\AutoLangDetect\AutoLangDetect.csproj">
       <Project>{6088614b-06b7-4a8a-8b1d-08d33cdae9b0}</Project>
       <Name>AutoLangDetect</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="langs.xml" />
+    <Content Include="stylers.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
