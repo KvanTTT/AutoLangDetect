@@ -76,6 +76,7 @@
 			this.cmbLanguage.Name = "cmbLanguage";
 			this.cmbLanguage.Size = new System.Drawing.Size(230, 24);
 			this.cmbLanguage.TabIndex = 10;
+			this.cmbLanguage.SelectedIndexChanged += new System.EventHandler(this.cmbLanguage_SelectedIndexChanged);
 			// 
 			// tbExtension
 			// 

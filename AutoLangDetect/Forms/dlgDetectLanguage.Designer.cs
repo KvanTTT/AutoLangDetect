@@ -44,6 +44,7 @@
 			this.cmbLanguage.Name = "cmbLanguage";
 			this.cmbLanguage.Size = new System.Drawing.Size(401, 24);
 			this.cmbLanguage.TabIndex = 0;
+			this.cmbLanguage.SelectedIndexChanged += new System.EventHandler(this.cmbLanguage_SelectedIndexChanged);
 			// 
 			// btnYes
 			// 

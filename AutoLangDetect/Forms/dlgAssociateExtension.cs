@@ -19,6 +19,12 @@ namespace AutoLangDetect
 		string _currentFileText;
 		NppLanguage _selectedItem;
 
+		public NppLanguage SelectedLanguage
+		{
+			get;
+			private set;
+		}
+
 		public dlgAssociateExtension(string fileName, string fileText, List<FilePathViewIndex> openedFiles)
 		{
 			InitializeComponent();
@@ -55,6 +61,8 @@ namespace AutoLangDetect
 		{
 			if (_selectedItem == null)
 				AssociateOpenedFiles(_defaultLanguage);
+			else
+				Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_SETCURRENTLANGTYPE, 0, (int)_defaultLanguage.LangType);
 
 			Close();
 		}
@@ -79,10 +87,10 @@ namespace AutoLangDetect
 			}
 		}
 
-		public NppLanguage SelectedLanguage
+		private void cmbLanguage_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			get;
-			private set;
+			var lang = (NppLanguage)cmbLanguage.SelectedItem;
+			Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_SETCURRENTLANGTYPE, 0, (int)lang.LangType);
 		}
 	}
 }

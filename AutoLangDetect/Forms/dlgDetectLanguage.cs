@@ -34,15 +34,14 @@ namespace AutoLangDetect
 
 		private void btnYes_Click(object sender, EventArgs e)
 		{
-			//Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_ACTIVATEDOC, _openedFiles[i].View, _openedFiles[i].Index);
-			Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_SETCURRENTLANGTYPE,
-									0, (int)((NppLanguage)cmbLanguage.SelectedItem).LangType);
-
 			Close();
 		}
 
 		private void btnNo_Click(object sender, EventArgs e)
 		{
+			Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_SETCURRENTLANGTYPE,
+									0, (int)Main.LangDetector.DefaultLang.LangType);
+
 			Close();
 		}
 
@@ -50,6 +49,12 @@ namespace AutoLangDetect
 		{
 			Main.Settings.ShowDetectLanguageDialog = cbShowDialogEveryTime.Checked;
 			Main.SaveSettings();
+		}
+
+		private void cmbLanguage_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			var lang = (NppLanguage)cmbLanguage.SelectedItem;
+			Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_SETCURRENTLANGTYPE, 0, (int)lang.LangType);
 		}
 	}
 }
