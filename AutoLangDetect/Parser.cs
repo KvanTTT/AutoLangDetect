@@ -9,17 +9,17 @@ using System.Xml.Serialization;
 
 namespace AutoLangDetect
 {
-	public class LangParser
+	public class Parser
 	{
 		const string UserDefined = "user defined";
 		static LangType[] _langTypes;
 
-		static LangParser()
+		static Parser()
 		{
 			_langTypes = (LangType[])Enum.GetValues(typeof(LangType));
 		}
 
-		public static Dictionary<string, NppLanguage> Deserialize(string langsData, string stylesData, out string encoding)
+		public static Dictionary<string, NppLanguage> DeserializeLangs(string langsData, string stylesData, out string encoding)
 		{
 			string s = langsData.Remove(langsData.IndexOf("?>"));
 			int encStart = s.IndexOf("encoding=\"") + "encoding=\"".Length;
@@ -45,7 +45,7 @@ namespace AutoLangDetect
 			return result;
 		}
 
-		public static string Serialize(Dictionary<string, NppLanguage> langs, string encoding)
+		public static string SerializeLangs(Dictionary<string, NppLanguage> langs, string encoding)
 		{
 			var xmlType = NppLangsToXml(langs);
 
@@ -183,6 +183,23 @@ namespace AutoLangDetect
 
 			xmlType.Languages = xmlLangs.ToArray();
 			return xmlType;
+		}
+	
+		public static List<string> DeserializeOpenedFiles(string sessionData)
+		{
+			var sesssionSerializer = new XmlSerializer(typeof(NotepadPlusSession));
+			NotepadPlusSession nppXmlSession;
+			using (TextReader reader = new StringReader(sessionData))
+				nppXmlSession = (NotepadPlusSession)sesssionSerializer.Deserialize(reader);
+
+			var result = new List<string>(nppXmlSession.Session.MainView.Files.Count + nppXmlSession.Session.SubView.Files.Count);
+			foreach (var file in nppXmlSession.Session.MainView.Files)
+				result.Add(file.Filename);
+			foreach (var file in nppXmlSession.Session.SubView.Files)
+				if (!result.Contains(file.Filename))
+					result.Add(file.Filename);
+
+			return result;
 		}
 	}
 }

@@ -11,7 +11,7 @@ namespace AutoLangDetect
 {
 	internal class NotificationHandler
 	{
-		const int MinTextLength = 5;
+		const int MinTextLength = 10;
 		const int TimerMilliseconds = 200;
 
 		static int _prevLength = 0;
@@ -59,18 +59,22 @@ namespace AutoLangDetect
 		internal static void FileOpened()
 		{
 			var openedFiles1 = Utils.GetOpenedFiles((int)NppMsg.PRIMARY_VIEW);
-			var openedFiles2 = Utils.GetOpenedFiles((int)NppMsg.SECOND_VIEW);
 			FilePathViewIndex openedFileName = null;
-			if (openedFiles1.Count > 0 && openedFiles1.Count > _lastPrimaryViewOpenedCount)
+			if (openedFiles1.Count > 0 && openedFiles1.Count != _lastPrimaryViewOpenedCount)
 			{
 				openedFileName = openedFiles1.Last();
 				_lastPrimaryViewOpenedCount = openedFiles1.Count;
 			}
-			else if (openedFiles2.Count > 0 && openedFiles2.Count > _lastSecondaryViewOpenedCount)
+			else
 			{
-				openedFileName = openedFiles2.Last();
+				var openedFiles2 = Utils.GetOpenedFiles((int)NppMsg.SECOND_VIEW);
+				if (openedFiles2.Count > 0 && openedFiles2.Count != _lastSecondaryViewOpenedCount)
+				{
+					openedFileName = openedFiles2.Last();
+				}
 				_lastSecondaryViewOpenedCount = openedFiles2.Count;
 			}
+			_lastPrimaryViewOpenedCount = openedFiles1.Count;
 
 			if (openedFileName != null)
 			{
@@ -92,18 +96,22 @@ namespace AutoLangDetect
 				string extension = Path.GetExtension(openedFile.Path);
 				if (extension == "")
 				{
-					if (Main.Settings.CheckEmptyExtensionFiles)
+					if (!Main.PrevSessionFiles.Contains(openedFile.Path))
 					{
-						var text = Utils.GetCurrentFileText();
-						if (Main.Settings.ShowDetectLanguageDialog)
+						Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_ACTIVATEDOC, openedFile.View, openedFile.Index);
+						if (Main.Settings.CheckEmptyExtensionFiles)
 						{
-							Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_ACTIVATEDOC, openedFile.View, openedFile.Index);
-							var detectLangDialog = new dlgDetectLanguage(openedFile.Path, text);
-							detectLangDialog.ShowDialog();
-						}
-						else
-						{
-							// TODO: autodetection
+							var text = Utils.GetCurrentFileText();
+							if (Main.Settings.ShowDetectLanguageDialog)
+							{
+								Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_ACTIVATEDOC, openedFile.View, openedFile.Index);
+								var detectLangDialog = new dlgDetectLanguage(openedFile.Path, text);
+								detectLangDialog.ShowDialog();
+							}
+							else
+							{
+								// TODO: autodetection
+							}
 						}
 					}
 				}
@@ -153,6 +161,18 @@ namespace AutoLangDetect
 			}
 			else
 				_prevLength = length;
+		}
+
+		internal static void FileClosed()
+		{
+			var openedFiles1 = Utils.GetOpenedFiles((int)NppMsg.PRIMARY_VIEW);
+			if (openedFiles1.Count != _lastPrimaryViewOpenedCount)
+				_lastPrimaryViewOpenedCount = openedFiles1.Count;
+			else
+			{
+				var openedFiles2 = Utils.GetOpenedFiles((int)NppMsg.SECOND_VIEW);
+				_lastSecondaryViewOpenedCount = openedFiles2.Count;
+			}
 		}
 	}
 }

@@ -86,7 +86,7 @@
       <DependentUpon>frmSettings.cs</DependentUpon>
     </Compile>
     <Compile Include="LangDetector.cs" />
-    <Compile Include="LangParser.cs" />
+    <Compile Include="Parser.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="NotificationHandler.cs" />
     <Compile Include="NppLanguage.cs" />

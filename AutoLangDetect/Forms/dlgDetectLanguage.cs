@@ -20,7 +20,7 @@ namespace AutoLangDetect
 			InitializeComponent();
 
 			if (string.IsNullOrEmpty(fileName) || fileName.StartsWith("new"))
-				lblQuestion.Text = "Would you like to associate inserted text with following language?";
+				lblQuestion.Text = string.Format("Would you like to associate inserted text of file \"{0}\" with following language?", fileName);
 			else
 				lblQuestion.Text = string.Format("Would you like to associate file \"{0}\" with following language?", Path.GetFileName(fileName));
 			_currentFileText = currentFileText;

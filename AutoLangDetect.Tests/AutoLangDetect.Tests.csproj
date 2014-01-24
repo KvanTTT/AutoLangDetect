@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="langs.xml" />
+    <Content Include="session.xml" />
     <Content Include="stylers.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

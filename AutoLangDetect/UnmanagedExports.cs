@@ -72,7 +72,7 @@ namespace AutoLangDetect
         {
             SCNotification nc = (SCNotification)Marshal.PtrToStructure(notifyCode, typeof(SCNotification));
 
-			var nppMsg = _nppMsgs.Where(msg => (uint)msg == nc.nmhdr.code);
+			/*var nppMsg = _nppMsgs.Where(msg => (uint)msg == nc.nmhdr.code);
 			if (nppMsg.Count() != 0)
 				_events.Add(DateTime.Now.ToShortTimeString() + " " + nppMsg.First() + " " + "Event code: " + nc.nmhdr.code);
 			else
@@ -84,7 +84,7 @@ namespace AutoLangDetect
 				{
 					_events.Add(DateTime.Now.ToShortTimeString() + " " + "Event code: " + nc.nmhdr.code);
 				}
-			}
+			}*/
 
 			switch (nc.nmhdr.code)
 			{
@@ -98,13 +98,16 @@ namespace AutoLangDetect
 					NotificationHandler.TabSwitched();
 					break;
 				case (uint)NppMsg.NPPN_BUFFERACTIVATED:
-					//NotificationHandler.BufferActivated();
+					
 					break;
 				case (uint)NppMsg.NPPN_FILEBEFORECLOSE:
-					//MessageBox.Show("NPPN_FILEBEFORECLOSE " + Utils.GetFullCurrentFileName());
+					Main.PrevSessionFiles.Remove(Utils.GetFullCurrentFileName());
+					break;
+				case (uint)NppMsg.NPPN_FILECLOSED:
+					NotificationHandler.FileClosed();
 					break;
 				case (uint)NppMsg.NPPN_DOCORDERCHANGED:
-					//MessageBox.Show("NPPN_DOCORDERCHANGED");
+
 					break;
 				case (uint)SciMsg.SCN_MODIFIED:
 					NotificationHandler.FileModified();
@@ -114,7 +117,7 @@ namespace AutoLangDetect
 					Main.SetToolBarIcon();
 					break;
 				case (uint)NppMsg.NPPN_SHUTDOWN:
-					File.WriteAllLines(@"C:\Users\IvanKoch\AppData\Roaming\Notepad++\plugins\AutoLangDetect.log", _events.ToArray());
+					//File.WriteAllLines(@"C:\Users\IvanKoch\AppData\Roaming\Notepad++\plugins\AutoLangDetect.log", _events.ToArray());
 					Main.PluginCleanUp();
 					Marshal.FreeHGlobal(_ptrPluginName);
 					break;

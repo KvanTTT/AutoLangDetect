@@ -21,6 +21,7 @@ namespace AutoLangDetect
 
 		internal static Settings Settings = new Settings();
 		internal static LangDetector LangDetector = new LangDetector();
+		internal static List<string> PrevSessionFiles;
 
 		static int detectLanguageMenuId;
 		static Bitmap tbBmp = Properties.Resources.star;
@@ -34,18 +35,22 @@ namespace AutoLangDetect
 		{
 			try
 			{
+				//MessageBox.Show("AutoLangDetect init");
+
 				StringBuilder sbIniFilePath = new StringBuilder(Win32.MAX_PATH);
 				Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_GETPLUGINSCONFIGDIR, Win32.MAX_PATH, sbIniFilePath);
-				string IniFilePath = sbIniFilePath.ToString();
-				if (!Directory.Exists(IniFilePath))
-					Directory.CreateDirectory(IniFilePath);
-				IniFileName = Path.Combine(IniFilePath, PluginName + ".ini");
+				string iniFilePath = sbIniFilePath.ToString();
+				if (!Directory.Exists(iniFilePath))
+					Directory.CreateDirectory(iniFilePath);
+				IniFileName = Path.Combine(iniFilePath, PluginName + ".ini");
 
-				LangsFileName = Path.Combine(IniFilePath, @"..\..\langs.xml");
-				var stylersFileName = Path.Combine(IniFilePath, @"..\..\stylers.xml");
+				LangsFileName = Path.Combine(iniFilePath, @"..\..\langs.xml");
+				var stylersFileName = Path.Combine(iniFilePath, @"..\..\stylers.xml");
 				string encoding;
-				var langs = LangParser.Deserialize(File.ReadAllText(LangsFileName), File.ReadAllText(stylersFileName), out encoding);
+				var langs = Parser.DeserializeLangs(File.ReadAllText(LangsFileName), File.ReadAllText(stylersFileName), out encoding);
 				LangDetector.InitLanguages(langs, encoding);
+
+				PrevSessionFiles = Parser.DeserializeOpenedFiles(File.ReadAllText(Path.Combine(iniFilePath, @"..\..\session.xml")));
 
 				LoadSettings();
 
@@ -140,7 +145,7 @@ namespace AutoLangDetect
 
 		internal static void SaveLangs()
 		{
-			string langsData = LangParser.Serialize(LangDetector.Languages, LangDetector.Encoding);
+			string langsData = Parser.SerializeLangs(LangDetector.Languages, LangDetector.Encoding);
 			File.WriteAllText(LangsFileName, langsData);
 		}
 

@@ -14,8 +14,10 @@ namespace AutoLangDetect
 {
 	public partial class dlgAssociateExtension : Form
 	{
+		NppLanguage _defaultLanguage;
 		List<FilePathViewIndex> _openedFiles;
 		string _currentFileText;
+		NppLanguage _selectedItem;
 
 		public dlgAssociateExtension(string fileName, string fileText, List<FilePathViewIndex> openedFiles)
 		{
@@ -27,10 +29,16 @@ namespace AutoLangDetect
 			tbExtension.Text = ext != "" ? ext.Substring(1) : ext;
 			_currentFileText = fileText;
 			_openedFiles = openedFiles;
+			_selectedItem = null;
 			foreach (var lang in Main.LangDetector.Languages)
+			{
+				if (_selectedItem == null && lang.Value.Extensions.Contains(tbExtension.Text))
+					_selectedItem = lang.Value;
 				cmbLanguage.Items.Add(lang.Value);
+			}
 			// TODO: Add lang autodetection
-			cmbLanguage.SelectedIndex = 0;
+			_defaultLanguage = _selectedItem == null ? Main.LangDetector.Languages.First().Value : _selectedItem;
+			cmbLanguage.SelectedItem = _defaultLanguage;
 			SelectedLanguage = null;
 
 			btnYes.Select();
@@ -45,7 +53,8 @@ namespace AutoLangDetect
 
 		private void btnNo_Click(object sender, EventArgs e)
 		{
-			AssociateOpenedFiles(Main.LangDetector.DefaultLang);
+			if (_selectedItem == null)
+				AssociateOpenedFiles(_defaultLanguage);
 
 			Close();
 		}

@@ -15,7 +15,7 @@ namespace AutoLangDetect.Tests
 		public void InitLanguages()
 		{
 			string encoding;
-			var langs = LangParser.Deserialize(File.ReadAllText(@"..\..\langs.xml"), File.ReadAllText(@"..\..\stylers.xml"), out encoding);
+			var langs = Parser.DeserializeLangs(File.ReadAllText(@"..\..\langs.xml"), File.ReadAllText(@"..\..\stylers.xml"), out encoding);
 			var langDetector = new LangDetector();
 			langDetector.InitLanguages(langs, encoding);
 		}

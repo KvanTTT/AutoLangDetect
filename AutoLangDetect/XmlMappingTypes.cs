@@ -124,4 +124,72 @@ namespace AutoLangDetect
 		[XmlAttribute("keywordClass")]
 		public string KeywordClass { get; set; }
 	}
+
+	[XmlRoot("NotepadPlus")]
+	public class NotepadPlusSession
+	{
+		[XmlElement("Session")]
+		public Session Session { get; set; }
+	}
+
+	public class Session
+	{
+		[XmlAttribute("activeView")]
+		public int ActiveView { get; set; }
+
+		[XmlElement("mainView")]
+		public MainView MainView { get; set; }
+
+		[XmlElement("subView")]
+		public SubView SubView { get; set; }
+	}
+
+	public class MainView
+	{
+		[XmlAttribute("activeIndex")]
+		public int ActiveIndex { get; set; }
+
+		[XmlElement("File")]
+		public List<NppFile> Files { get; set; }
+	}
+
+	public class SubView
+	{
+		[XmlAttribute("activeIndex")]
+		public int ActiveIndex { get; set; }
+
+		[XmlElement("File")]
+		public List<NppFile> Files { get; set; }
+	}
+
+	[XmlType("File")]
+	public class NppFile
+	{
+		[XmlAttribute("firstVisibleLine")]
+		public int FirstVisibleLine { get; set; }
+
+		[XmlAttribute("xOffset")]
+		public int XOffset { get; set; }
+
+		[XmlAttribute("scrollWidth")]
+		public int ScrollWidth { get; set; }
+
+		[XmlAttribute("startPos")]
+		public int StartPos { get; set; }
+
+		[XmlAttribute("EndPos")]
+		public int endPos { get; set; }
+
+		[XmlAttribute("SelMode")]
+		public int selMode { get; set; }
+
+		[XmlAttribute("lang")]
+		public string Language { get; set; }
+
+		[XmlAttribute("encoding")]
+		public int Encoding { get; set; }
+
+		[XmlAttribute("filename")]
+		public string Filename { get; set; }
+	}
 }

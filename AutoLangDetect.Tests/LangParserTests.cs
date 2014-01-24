@@ -14,9 +14,9 @@ namespace AutoLangDetect.Tests
 		public void SerialzieDeserialize()
 		{
 			string encoding;
-			var langs = LangParser.Deserialize(File.ReadAllText(@"..\..\langs.xml"), File.ReadAllText(@"..\..\stylers.xml"), out encoding);
-			var xml = LangParser.Serialize(langs, encoding);
-			var langs2 = LangParser.Deserialize(xml, File.ReadAllText(@"..\..\stylers.xml"), out encoding);
+			var langs = Parser.DeserializeLangs(File.ReadAllText(@"..\..\langs.xml"), File.ReadAllText(@"..\..\stylers.xml"), out encoding);
+			var xml = Parser.SerializeLangs(langs, encoding);
+			var langs2 = Parser.DeserializeLangs(xml, File.ReadAllText(@"..\..\stylers.xml"), out encoding);
 
 			Assert.AreEqual(1, langs.Count(lang => lang.Value.LangType == NppPluginNET.LangType.L_USER));
 			Assert.AreEqual(0, langs.Count(l => string.IsNullOrEmpty(l.Value.Description)));
@@ -34,6 +34,13 @@ namespace AutoLangDetect.Tests
 					CollectionAssert.AreEqual(keywords.Value, keywords2.Value);
 				}
 			}
+		}
+
+		[Test]
+		public void ParseSession()
+		{
+			var openedFiles = Parser.DeserializeOpenedFiles(File.ReadAllText(@"..\..\session.xml"));
+			Assert.AreEqual(3, openedFiles.Count);
 		}
 	}
 }

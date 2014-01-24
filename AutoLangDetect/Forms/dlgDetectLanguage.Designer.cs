@@ -42,13 +42,13 @@
 			this.cmbLanguage.FormattingEnabled = true;
 			this.cmbLanguage.Location = new System.Drawing.Point(15, 37);
 			this.cmbLanguage.Name = "cmbLanguage";
-			this.cmbLanguage.Size = new System.Drawing.Size(337, 24);
+			this.cmbLanguage.Size = new System.Drawing.Size(401, 24);
 			this.cmbLanguage.TabIndex = 0;
 			// 
 			// btnYes
 			// 
 			this.btnYes.DialogResult = System.Windows.Forms.DialogResult.Yes;
-			this.btnYes.Location = new System.Drawing.Point(108, 73);
+			this.btnYes.Location = new System.Drawing.Point(140, 77);
 			this.btnYes.Name = "btnYes";
 			this.btnYes.Size = new System.Drawing.Size(75, 23);
 			this.btnYes.TabIndex = 2;
@@ -59,7 +59,7 @@
 			// btnNo
 			// 
 			this.btnNo.DialogResult = System.Windows.Forms.DialogResult.No;
-			this.btnNo.Location = new System.Drawing.Point(189, 73);
+			this.btnNo.Location = new System.Drawing.Point(221, 77);
 			this.btnNo.Name = "btnNo";
 			this.btnNo.Size = new System.Drawing.Size(75, 23);
 			this.btnNo.TabIndex = 3;
@@ -93,7 +93,7 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(364, 136);
+			this.ClientSize = new System.Drawing.Size(428, 136);
 			this.Controls.Add(this.cbShowDialogEveryTime);
 			this.Controls.Add(this.lblQuestion);
 			this.Controls.Add(this.btnNo);
