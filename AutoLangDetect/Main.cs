@@ -35,22 +35,18 @@ namespace AutoLangDetect
 		{
 			try
 			{
-				//MessageBox.Show("AutoLangDetect init");
+				string pluginsConfigDir = Utils.GetPluginsConfigDir();
+				if (!Directory.Exists(pluginsConfigDir))
+					Directory.CreateDirectory(pluginsConfigDir);
+				IniFileName = Path.Combine(pluginsConfigDir, PluginName + ".ini");
 
-				StringBuilder sbIniFilePath = new StringBuilder(Win32.MAX_PATH);
-				Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_GETPLUGINSCONFIGDIR, Win32.MAX_PATH, sbIniFilePath);
-				string iniFilePath = sbIniFilePath.ToString();
-				if (!Directory.Exists(iniFilePath))
-					Directory.CreateDirectory(iniFilePath);
-				IniFileName = Path.Combine(iniFilePath, PluginName + ".ini");
-
-				LangsFileName = Path.Combine(iniFilePath, @"..\..\langs.xml");
-				var stylersFileName = Path.Combine(iniFilePath, @"..\..\stylers.xml");
+				LangsFileName = Path.Combine(pluginsConfigDir, @"..\..\langs.xml");
+				var stylersFileName = Path.Combine(pluginsConfigDir, @"..\..\stylers.xml");
 				string encoding;
 				var langs = Parser.DeserializeLangs(File.ReadAllText(LangsFileName), File.ReadAllText(stylersFileName), out encoding);
 				LangDetector.InitLanguages(langs, encoding);
 
-				PrevSessionFiles = Parser.DeserializeOpenedFiles(File.ReadAllText(Path.Combine(iniFilePath, @"..\..\session.xml")));
+				PrevSessionFiles = Parser.DeserializeOpenedFiles(File.ReadAllText(Path.Combine(pluginsConfigDir, @"..\..\session.xml")));
 
 				LoadSettings();
 

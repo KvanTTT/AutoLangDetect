@@ -74,7 +74,7 @@
 			this.cmbLanguage.FormattingEnabled = true;
 			this.cmbLanguage.Location = new System.Drawing.Point(186, 32);
 			this.cmbLanguage.Name = "cmbLanguage";
-			this.cmbLanguage.Size = new System.Drawing.Size(211, 24);
+			this.cmbLanguage.Size = new System.Drawing.Size(230, 24);
 			this.cmbLanguage.TabIndex = 10;
 			// 
 			// tbExtension

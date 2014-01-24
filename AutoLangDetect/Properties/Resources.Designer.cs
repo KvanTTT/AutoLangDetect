@@ -61,6 +61,21 @@ namespace AutoLangDetect.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;Windows-1252&quot; ?&gt;
+        ///&lt;NotepadPlus&gt;
+        ///   &lt;!-- The key words of the supported languages, don&apos;t touch them! --&gt;
+        ///   &lt;Languages&gt;
+        ///        &lt;Language name=&quot;normal&quot; ext=&quot;txt&quot;/&gt;
+        ///        &lt;Language name=&quot;actionscript&quot; ext=&quot;as mx&quot; commentLine=&quot;//&quot; commentStart=&quot;/*&quot; commentEnd=&quot;*/&quot;&gt;
+        ///            &lt;Keywords name=&quot;instre1&quot;&gt;add for lt tellTarget and function ne this break ge new typeof continue gt not var delete if on void do ifFrameLoaded onClipEvent while else in or with eq le return instanceof [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string langs {
+            get {
+                return ResourceManager.GetString("langs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap star {

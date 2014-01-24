@@ -32,8 +32,8 @@
 			this.cbCheckEmptyExtensionFiles = new System.Windows.Forms.CheckBox();
 			this.btnOk = new System.Windows.Forms.Button();
 			this.cbShowDetectLanguageDialog = new System.Windows.Forms.CheckBox();
-			this.cbShowAssociateExtensionDialog = new System.Windows.Forms.CheckBox();
 			this.btnCancel = new System.Windows.Forms.Button();
+			this.btnResetExtensions = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// cbDetectLanguageAutomatically
@@ -62,7 +62,7 @@
 			// 
 			// btnOk
 			// 
-			this.btnOk.Location = new System.Drawing.Point(27, 116);
+			this.btnOk.Location = new System.Drawing.Point(20, 120);
 			this.btnOk.Name = "btnOk";
 			this.btnOk.Size = new System.Drawing.Size(75, 23);
 			this.btnOk.TabIndex = 3;
@@ -82,21 +82,9 @@
 			this.cbShowDetectLanguageDialog.Text = "Show detect language dialog";
 			this.cbShowDetectLanguageDialog.UseVisualStyleBackColor = true;
 			// 
-			// cbShowAssociateExtensionDialog
-			// 
-			this.cbShowAssociateExtensionDialog.AutoSize = true;
-			this.cbShowAssociateExtensionDialog.Checked = true;
-			this.cbShowAssociateExtensionDialog.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.cbShowAssociateExtensionDialog.Location = new System.Drawing.Point(12, 81);
-			this.cbShowAssociateExtensionDialog.Name = "cbShowAssociateExtensionDialog";
-			this.cbShowAssociateExtensionDialog.Size = new System.Drawing.Size(180, 17);
-			this.cbShowAssociateExtensionDialog.TabIndex = 5;
-			this.cbShowAssociateExtensionDialog.Text = "Show associate extension dialog";
-			this.cbShowAssociateExtensionDialog.UseVisualStyleBackColor = true;
-			// 
 			// btnCancel
 			// 
-			this.btnCancel.Location = new System.Drawing.Point(108, 116);
+			this.btnCancel.Location = new System.Drawing.Point(101, 120);
 			this.btnCancel.Name = "btnCancel";
 			this.btnCancel.Size = new System.Drawing.Size(75, 23);
 			this.btnCancel.TabIndex = 6;
@@ -104,13 +92,23 @@
 			this.btnCancel.UseVisualStyleBackColor = true;
 			this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
 			// 
+			// btnResetExtensions
+			// 
+			this.btnResetExtensions.Location = new System.Drawing.Point(20, 92);
+			this.btnResetExtensions.Name = "btnResetExtensions";
+			this.btnResetExtensions.Size = new System.Drawing.Size(156, 22);
+			this.btnResetExtensions.TabIndex = 7;
+			this.btnResetExtensions.Text = "Reset Extensions";
+			this.btnResetExtensions.UseVisualStyleBackColor = true;
+			this.btnResetExtensions.Click += new System.EventHandler(this.btnResetExtensions_Click);
+			// 
 			// frmSettings
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(222, 155);
+			this.ClientSize = new System.Drawing.Size(190, 154);
+			this.Controls.Add(this.btnResetExtensions);
 			this.Controls.Add(this.btnCancel);
-			this.Controls.Add(this.cbShowAssociateExtensionDialog);
 			this.Controls.Add(this.cbShowDetectLanguageDialog);
 			this.Controls.Add(this.btnOk);
 			this.Controls.Add(this.cbCheckEmptyExtensionFiles);
@@ -132,7 +130,7 @@
 		private System.Windows.Forms.CheckBox cbCheckEmptyExtensionFiles;
 		private System.Windows.Forms.Button btnOk;
 		private System.Windows.Forms.CheckBox cbShowDetectLanguageDialog;
-		private System.Windows.Forms.CheckBox cbShowAssociateExtensionDialog;
 		private System.Windows.Forms.Button btnCancel;
+		private System.Windows.Forms.Button btnResetExtensions;
 	}
 }

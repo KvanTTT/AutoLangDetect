@@ -21,9 +21,16 @@ namespace AutoLangDetect
 
 		static int _lastPrimaryViewOpenedCount = 0;
 		static int _lastSecondaryViewOpenedCount = 0;
-		static Dictionary<string, NppLanguage> _newlyAddedExtension = new Dictionary<string, NppLanguage>();
+		static Dictionary<string, NppLanguage> _newlyAddedExtensions = new Dictionary<string, NppLanguage>();
 		static Queue<FilePathViewIndex> _openedFiles = new Queue<FilePathViewIndex>();
 		static System.Threading.Timer _openedFileTimer = new System.Threading.Timer(_ => ProcessOpenedFiles(), null, Timeout.Infinite, Timeout.Infinite);
+
+		internal static void ResetNewlyAddedExtensions()
+		{
+			_newlyAddedExtensions = new Dictionary<string, NppLanguage>();
+			foreach (var ext in Main.LangDetector.ExtensionLangs)
+				_newlyAddedExtensions.Add(ext.Key, ext.Value);
+		}
 
 		internal static void TabSwitched()
 		{
@@ -123,13 +130,13 @@ namespace AutoLangDetect
 						Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_ACTIVATEDOC, openedFile.View, openedFile.Index);
 						var associateExtDialog = new dlgAssociateExtension(openedFile.Path, Utils.GetCurrentFileText(), Utils.GetOpenedFiles());
 						var dlgResult = associateExtDialog.ShowDialog();
-						if (associateExtDialog.SelectedLanguage != null && !_newlyAddedExtension.ContainsKey(extension))
-							_newlyAddedExtension.Add(extension, associateExtDialog.SelectedLanguage);
+						if (associateExtDialog.SelectedLanguage != null && !_newlyAddedExtensions.ContainsKey(extension))
+							_newlyAddedExtensions.Add(extension, associateExtDialog.SelectedLanguage);
 					}
-					else if (_newlyAddedExtension.ContainsKey(extension))
+					else if (_newlyAddedExtensions.ContainsKey(extension))
 					{
 						Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_ACTIVATEDOC, openedFile.View, openedFile.Index);
-						Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_SETCURRENTLANGTYPE, 0, (int)_newlyAddedExtension[extension].LangType);
+						Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_SETCURRENTLANGTYPE, 0, (int)_newlyAddedExtensions[extension].LangType);
 					}
 				}
 			}

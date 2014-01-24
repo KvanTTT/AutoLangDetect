@@ -59,5 +59,20 @@ namespace AutoLangDetect
 			Win32.SendMessage(PluginBase.GetCurrentScintilla(), SciMsg.SCI_GETTEXTRANGE, 0, range.NativePointer);
 			return range.lpstrTextUtf8;
 		}
+
+		internal static string GetPluginsConfigDir()
+		{
+			StringBuilder sbIniFilePath = new StringBuilder(Win32.MAX_PATH);
+			Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_GETPLUGINSCONFIGDIR, Win32.MAX_PATH, sbIniFilePath);
+			return sbIniFilePath.ToString();
+		}
+
+		public static string ExtensionWithoutDot(string extension)
+		{
+			if (string.IsNullOrEmpty(extension))
+				return "";
+			else
+				return extension[0] == '.' ? extension.Substring(1) : extension;
+		}
 	}
 }
