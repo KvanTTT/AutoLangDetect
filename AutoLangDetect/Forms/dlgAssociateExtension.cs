@@ -16,6 +16,7 @@ namespace AutoLangDetect
 	{
 		NppLanguage _defaultLanguage;
 		List<FilePathViewIndex> _openedFiles;
+		List<FilePathViewIndex> _currentFiles;
 		string _currentFileText;
 		NppLanguage _selectedItem;
 
@@ -25,14 +26,19 @@ namespace AutoLangDetect
 			private set;
 		}
 
-		public dlgAssociateExtension(string fileName, string fileText, List<FilePathViewIndex> openedFiles)
+		public dlgAssociateExtension(FilePathViewIndex file, string fileText, List<FilePathViewIndex> openedFiles)
+			: this(new List<FilePathViewIndex>() { file }, fileText, openedFiles)
+		{
+		}
+
+		public dlgAssociateExtension(List<FilePathViewIndex> files, string fileText, List<FilePathViewIndex> openedFiles)
 		{
 			InitializeComponent();
 
-			string shortFileName = Path.GetFileName(fileName);
-			string ext = Path.GetExtension(fileName);
+			_currentFiles = files;
+			string shortFileName = Path.GetFileName(files.First().Path);
 			Text = string.Format("Associate Extension of file \"{0}\"", shortFileName);
-			tbExtension.Text = ext != "" ? ext.Substring(1) : ext;
+			tbExtension.Text = Utils.GetExtensionWithoutDot(shortFileName);
 			_currentFileText = fileText;
 			_openedFiles = openedFiles;
 			_selectedItem = null;
@@ -50,20 +56,8 @@ namespace AutoLangDetect
 			btnYes.Select();
 		}
 
-		private void btnYes_Click(object sender, EventArgs e)
+		private void btnYesNo_Click(object sender, EventArgs e)
 		{
-			AssociateOpenedFiles((NppLanguage)cmbLanguage.SelectedItem);
-			
-			Close();
-		}
-
-		private void btnNo_Click(object sender, EventArgs e)
-		{
-			if (_selectedItem == null)
-				AssociateOpenedFiles(_defaultLanguage);
-			else
-				Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_SETCURRENTLANGTYPE, 0, (int)_defaultLanguage.LangType);
-
 			Close();
 		}
 
@@ -75,11 +69,11 @@ namespace AutoLangDetect
 			Main.SaveLangs();
 
 			//TODO: save and restore current active view and index
-			string extWithPoint = tbExtension.Text != "" ? "." + tbExtension.Text : "";
+			string extWithDot = Utils.AppendDotToExtension(tbExtension.Text);
 			var langType = (int)lang.LangType;
 			foreach (var file in _openedFiles)
 			{
-				if (!file.Path.StartsWith("new") && Path.GetExtension(file.Path) == extWithPoint)
+				if (!Utils.IsFileNew(file.Path) && Path.GetExtension(file.Path) == extWithDot)
 				{
 					Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_ACTIVATEDOC, file.View, file.Index);
 					Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_SETCURRENTLANGTYPE, 0, langType);
@@ -91,6 +85,21 @@ namespace AutoLangDetect
 		{
 			var lang = (NppLanguage)cmbLanguage.SelectedItem;
 			Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_SETCURRENTLANGTYPE, 0, (int)lang.LangType);
+		}
+
+		private void dlgAssociateExtension_FormClosing(object sender, FormClosingEventArgs e)
+		{
+			if (DialogResult == DialogResult.Yes)
+			{
+				AssociateOpenedFiles((NppLanguage)cmbLanguage.SelectedItem);
+			}
+			else
+			{
+				if (_selectedItem == null)
+					AssociateOpenedFiles(_defaultLanguage);
+				else
+					Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_SETCURRENTLANGTYPE, 0, (int)_defaultLanguage.LangType);
+			}
 		}
 	}
 }

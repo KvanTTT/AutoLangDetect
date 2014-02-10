@@ -54,7 +54,7 @@
 			this.btnYes.TabIndex = 8;
 			this.btnYes.Text = "Yes";
 			this.btnYes.UseVisualStyleBackColor = true;
-			this.btnYes.Click += new System.EventHandler(this.btnYes_Click);
+			this.btnYes.Click += new System.EventHandler(this.btnYesNo_Click);
 			// 
 			// btnNo
 			// 
@@ -65,7 +65,7 @@
 			this.btnNo.TabIndex = 9;
 			this.btnNo.Text = "No";
 			this.btnNo.UseVisualStyleBackColor = true;
-			this.btnNo.Click += new System.EventHandler(this.btnNo_Click);
+			this.btnNo.Click += new System.EventHandler(this.btnYesNo_Click);
 			// 
 			// cmbLanguage
 			// 
@@ -101,6 +101,7 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.CancelButton = this.btnNo;
 			this.ClientSize = new System.Drawing.Size(428, 102);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.tbExtension);
@@ -112,8 +113,9 @@
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "dlgAssociateExtension";
-			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
 			this.Text = "Associate Extension";
+			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.dlgAssociateExtension_FormClosing);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 

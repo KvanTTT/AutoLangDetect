@@ -89,6 +89,7 @@ namespace AutoLangDetect
 			switch (nc.nmhdr.code)
 			{
 				case (uint)NppMsg.NPPN_FILEOPENED:
+					//MessageBox.Show("NPPN_FILEOPENED");
 					NotificationHandler.FileOpened();
 					break;
 				case 4294967294:
@@ -98,12 +99,15 @@ namespace AutoLangDetect
 					NotificationHandler.TabSwitched();
 					break;
 				case (uint)NppMsg.NPPN_BUFFERACTIVATED:
-					
+					//MessageBox.Show("NPPN_BUFFERACTIVATED");
+					NotificationHandler.BufferActivated();
 					break;
 				case (uint)NppMsg.NPPN_FILEBEFORECLOSE:
-					Main.PrevSessionFiles.Remove(Utils.GetFullCurrentFileName());
+
+					Main.PrevSessionFiles.Remove(PluginBase.GetFullCurrentFileName());
 					break;
 				case (uint)NppMsg.NPPN_FILECLOSED:
+					//MessageBox.Show("NPPN_FILECLOSED");
 					NotificationHandler.FileClosed();
 					break;
 				case (uint)NppMsg.NPPN_DOCORDERCHANGED:

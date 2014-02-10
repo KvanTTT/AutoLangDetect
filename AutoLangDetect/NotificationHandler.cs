@@ -11,16 +11,16 @@ namespace AutoLangDetect
 {
 	internal class NotificationHandler
 	{
-		const int MinTextLength = 10;
+		const int MinTextLength = 100;
 		const int TimerMilliseconds = 200;
 
 		static int _prevLength = 0;
-		static bool _tabSwitched = false;
-		static string _currentFileName = "";
-		static bool _newFile = false;
 
-		static int _lastPrimaryViewOpenedCount = 0;
-		static int _lastSecondaryViewOpenedCount = 0;
+		static int _lastPrimaryOpenedFilesCount = 0;
+		static int _lastSecondaryOpenedFilesCount = 0;
+		static int _lastPrimaryOpenedOrNewFilesCount = 0;
+		static int _lastSecondaryOpenedOrNewFilesCount = 0;
+		static bool _fileRecentlyOpened = false;
 		static Dictionary<string, NppLanguage> _newlyAddedExtensions = new Dictionary<string, NppLanguage>();
 		static Queue<FilePathViewIndex> _openedFiles = new Queue<FilePathViewIndex>();
 		static System.Threading.Timer _openedFileTimer = new System.Threading.Timer(_ => ProcessOpenedFiles(), null, Timeout.Infinite, Timeout.Infinite);
@@ -34,54 +34,60 @@ namespace AutoLangDetect
 
 		internal static void TabSwitched()
 		{
-			_tabSwitched = true;
 		}
 
 		internal static void BufferActivated()
 		{
-			if (_tabSwitched)
+			int currentPrimaryOpenedOrNewFilesCount = PluginBase.GetOpenedOrNewFilesCount((int)NppMsg.PRIMARY_VIEW);
+			int currentSecondaryOpenedOrNewFilesCount = PluginBase.GetOpenedOrNewFilesCount((int)NppMsg.SECOND_VIEW);
+			if (!_fileRecentlyOpened)
 			{
-				//MessageBox.Show("BufferActivated tab");
-				_currentFileName = Utils.GetFullCurrentFileName();
-				_newFile = _currentFileName.StartsWith("new");
-				_prevLength = Win32.SendMessage(PluginBase.GetCurrentScintilla(), SciMsg.SCI_GETLENGTH, 0, 0).ToInt32();
-				_tabSwitched = false;
-			}
-			else
-			{
-				StringBuilder builder = new StringBuilder(Win32.MAX_PATH);
-				Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_GETFULLCURRENTPATH, 0, builder);
-				string fullPath = builder.ToString();
-				if (fullPath.StartsWith("new"))
+				if ((currentPrimaryOpenedOrNewFilesCount > 1 &&
+					currentPrimaryOpenedOrNewFilesCount > _lastPrimaryOpenedOrNewFilesCount) ||
+					(currentSecondaryOpenedOrNewFilesCount > 1 &&
+					currentSecondaryOpenedOrNewFilesCount > _lastSecondaryOpenedOrNewFilesCount) &&
+					Utils.IsFileNew(PluginBase.GetFullCurrentFileName()))
 				{
-					//MessageBox.Show("BufferActivated new");
-					_currentFileName = Utils.GetFullCurrentFileName();
-					_newFile = _currentFileName.StartsWith("new");
-					_prevLength = Win32.SendMessage(PluginBase.GetCurrentScintilla(), SciMsg.SCI_GETLENGTH, 0, 0).ToInt32();
-					_tabSwitched = true;
+					if (Clipboard.ContainsText())
+					{
+						if (Main.Settings.ShowPasteTextFromClipboardDialog)
+						{
+							var dlg = new dlgShowPasteClipboardText(Clipboard.GetText());
+							dlg.ShowDialog();
+						}
+						else
+						{
+							if (Main.Settings.PasteClipboardTextToNewlyCreatedFile)
+								PluginBase.SetCurrentFileText(Clipboard.GetText());
+						}
+					}
 				}
 			}
+			_lastPrimaryOpenedOrNewFilesCount = currentPrimaryOpenedOrNewFilesCount;
+			_lastSecondaryOpenedOrNewFilesCount = currentSecondaryOpenedOrNewFilesCount;
 		}
 
 		internal static void FileOpened()
 		{
-			var openedFiles1 = Utils.GetOpenedFiles((int)NppMsg.PRIMARY_VIEW);
+			_fileRecentlyOpened = true;
+
+			var openedFiles1 = PluginBase.GetOpenedFiles((int)NppMsg.PRIMARY_VIEW);
 			FilePathViewIndex openedFileName = null;
-			if (openedFiles1.Count > 0 && openedFiles1.Count != _lastPrimaryViewOpenedCount)
+			if (openedFiles1.Count > 0 && openedFiles1.Count != _lastPrimaryOpenedFilesCount)
 			{
 				openedFileName = openedFiles1.Last();
-				_lastPrimaryViewOpenedCount = openedFiles1.Count;
+				_lastPrimaryOpenedFilesCount = openedFiles1.Count;
 			}
 			else
 			{
-				var openedFiles2 = Utils.GetOpenedFiles((int)NppMsg.SECOND_VIEW);
-				if (openedFiles2.Count > 0 && openedFiles2.Count != _lastSecondaryViewOpenedCount)
+				var openedFiles2 = PluginBase.GetOpenedFiles((int)NppMsg.SECOND_VIEW);
+				if (openedFiles2.Count > 0 && openedFiles2.Count != _lastSecondaryOpenedFilesCount)
 				{
 					openedFileName = openedFiles2.Last();
 				}
-				_lastSecondaryViewOpenedCount = openedFiles2.Count;
+				_lastSecondaryOpenedFilesCount = openedFiles2.Count;
 			}
-			_lastPrimaryViewOpenedCount = openedFiles1.Count;
+			_lastPrimaryOpenedFilesCount = openedFiles1.Count;
 
 			if (openedFileName != null)
 			{
@@ -100,7 +106,7 @@ namespace AutoLangDetect
 			{
 				var openedFile = _openedFiles.Dequeue();
 
-				string extension = Path.GetExtension(openedFile.Path);
+				string extension = Utils.GetExtensionWithoutDot(openedFile.Path);
 				if (extension == "")
 				{
 					if (!Main.PrevSessionFiles.Contains(openedFile.Path))
@@ -108,12 +114,12 @@ namespace AutoLangDetect
 						Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_ACTIVATEDOC, openedFile.View, openedFile.Index);
 						if (Main.Settings.CheckEmptyExtensionFiles)
 						{
-							var text = Utils.GetCurrentFileText();
+							var text = PluginBase.GetCurrentFileText();
 							if (Main.Settings.ShowDetectLanguageDialog)
 							{
 								Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_ACTIVATEDOC, openedFile.View, openedFile.Index);
 								var detectLangDialog = new dlgDetectLanguage(openedFile.Path, text);
-								detectLangDialog.ShowDialog();
+								detectLangDialog.ShowDialog(Control.FromHandle(PluginBase.nppData._nppHandle));
 							}
 							else
 							{
@@ -124,12 +130,11 @@ namespace AutoLangDetect
 				}
 				else
 				{
-					extension = extension.Substring(1);
 					if (!Main.LangDetector.ContainsExtension(extension))
 					{
 						Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_ACTIVATEDOC, openedFile.View, openedFile.Index);
-						var associateExtDialog = new dlgAssociateExtension(openedFile.Path, Utils.GetCurrentFileText(), Utils.GetOpenedFiles());
-						var dlgResult = associateExtDialog.ShowDialog();
+						var associateExtDialog = new dlgAssociateExtension(openedFile, PluginBase.GetCurrentFileText(), PluginBase.GetOpenedFiles());
+						var dlgResult = associateExtDialog.ShowDialog(Control.FromHandle(PluginBase.nppData._nppHandle));
 						if (associateExtDialog.SelectedLanguage != null && !_newlyAddedExtensions.ContainsKey(extension))
 							_newlyAddedExtensions.Add(extension, associateExtDialog.SelectedLanguage);
 					}
@@ -140,6 +145,7 @@ namespace AutoLangDetect
 					}
 				}
 			}
+			_fileRecentlyOpened = false;
 		}
 
 		internal static void FileModified()
@@ -149,14 +155,14 @@ namespace AutoLangDetect
 			{
 				_prevLength = length;
 
-				if (Utils.GetFullCurrentFileName().StartsWith("new"))
+				if (Utils.IsFileNew(PluginBase.GetFullCurrentFileName()))
 				{
 					if (Main.Settings.DetectLanguageAutomatically)
 					{
-						var text = Utils.GetCurrentFileText(length);
+						var text = PluginBase.GetCurrentFileText(length);
 						if (Main.Settings.ShowDetectLanguageDialog)
 						{
-							var detectLangDialog = new dlgDetectLanguage(Utils.GetFullCurrentFileName(), text);
+							var detectLangDialog = new dlgDetectLanguage(PluginBase.GetFullCurrentFileName(), text);
 							detectLangDialog.ShowDialog();
 						}
 						else
@@ -172,13 +178,13 @@ namespace AutoLangDetect
 
 		internal static void FileClosed()
 		{
-			var openedFiles1 = Utils.GetOpenedFiles((int)NppMsg.PRIMARY_VIEW);
-			if (openedFiles1.Count != _lastPrimaryViewOpenedCount)
-				_lastPrimaryViewOpenedCount = openedFiles1.Count;
+			var openedFiles1 = PluginBase.GetOpenedFiles((int)NppMsg.PRIMARY_VIEW);
+			if (openedFiles1.Count != _lastPrimaryOpenedFilesCount)
+				_lastPrimaryOpenedFilesCount = openedFiles1.Count;
 			else
 			{
-				var openedFiles2 = Utils.GetOpenedFiles((int)NppMsg.SECOND_VIEW);
-				_lastSecondaryViewOpenedCount = openedFiles2.Count;
+				var openedFiles2 = PluginBase.GetOpenedFiles((int)NppMsg.SECOND_VIEW);
+				_lastSecondaryOpenedFilesCount = openedFiles2.Count;
 			}
 		}
 	}

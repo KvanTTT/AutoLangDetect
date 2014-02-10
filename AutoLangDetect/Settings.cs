@@ -8,9 +8,9 @@ namespace AutoLangDetect
 	public class Settings
 	{
 		public bool DetectLanguageAutomatically { get; set; }
-
 		public bool CheckEmptyExtensionFiles { get; set; }
-
 		public bool ShowDetectLanguageDialog { get; set; }
+		public bool PasteClipboardTextToNewlyCreatedFile { get; set; }
+		public bool ShowPasteTextFromClipboardDialog { get; set; }
 	}
 }

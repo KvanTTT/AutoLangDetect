@@ -35,7 +35,7 @@ namespace AutoLangDetect
 		{
 			try
 			{
-				string pluginsConfigDir = Utils.GetPluginsConfigDir();
+				string pluginsConfigDir = PluginBase.GetPluginsConfigDir();
 				if (!Directory.Exists(pluginsConfigDir))
 					Directory.CreateDirectory(pluginsConfigDir);
 				IniFileName = Path.Combine(pluginsConfigDir, PluginName + ".ini");
@@ -85,14 +85,14 @@ namespace AutoLangDetect
 		{
 			if (Settings.ShowDetectLanguageDialog)
 			{
-				var dlgDetectLanguage = new dlgDetectLanguage(Utils.GetFullCurrentFileName(), Utils.GetCurrentFileText());
+				var dlgDetectLanguage = new dlgDetectLanguage(PluginBase.GetFullCurrentFileName(), PluginBase.GetCurrentFileText());
 				dlgDetectLanguage.ShowDialog();
 			}
 		}
 
 		internal static void AssociateExtension()
 		{
-			var dlgAssociateExtension = new dlgAssociateExtension(Utils.GetFullCurrentFileName(), Utils.GetCurrentFileText(), Utils.GetOpenedFiles());
+			var dlgAssociateExtension = new dlgAssociateExtension(PluginBase.GetCurrentFiles(), PluginBase.GetCurrentFileText(), PluginBase.GetOpenedFiles());
 			dlgAssociateExtension.ShowDialog();
 		}
 
@@ -110,9 +110,11 @@ namespace AutoLangDetect
 
 		internal static void Test()
 		{
-			Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_ACTIVATEDOC, 1, 1);
+			if (Clipboard.ContainsText())
+				PluginBase.SetCurrentFileText(Clipboard.GetText());
+			//Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_ACTIVATEDOC, 1, 1);
 			//MessageBox.Show(string.Join(",", Utils.GetOpenedFiles()));
-			Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_SETCURRENTLANGTYPE, 0, (int)LangType.L_XML);
+			//Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_SETCURRENTLANGTYPE, 0, (int)LangType.L_XML);
 		}
 
 		#endregion
@@ -127,6 +129,10 @@ namespace AutoLangDetect
 				Win32.GetPrivateProfileInt("Settings", "CheckEmptyExtension", 1, Main.IniFileName) != 0;
 			Settings.ShowDetectLanguageDialog =
 				Win32.GetPrivateProfileInt("Settings", "ShowDetectLanguageDialog", 1, Main.IniFileName) != 0;
+			Settings.PasteClipboardTextToNewlyCreatedFile =
+				Win32.GetPrivateProfileInt("Settings", "PasteClipboardTextToNewlyCreatedFile", 1, Main.IniFileName) != 0;
+			Settings.ShowPasteTextFromClipboardDialog =
+				Win32.GetPrivateProfileInt("Settings", "ShowPasteTextFromClipboardDialog", 1, Main.IniFileName) != 0;
 		}
 
 		internal static void SaveSettings()
@@ -137,6 +143,10 @@ namespace AutoLangDetect
 				Convert.ToInt32(Settings.CheckEmptyExtensionFiles).ToString(), Main.IniFileName);
 			Win32.WritePrivateProfileString("Settings", "ShowDetectLanguageDialog",
 				Convert.ToInt32(Settings.ShowDetectLanguageDialog).ToString(), Main.IniFileName);
+			Win32.WritePrivateProfileString("Settings", "PasteClipboardTextToNewlyCreatedFile",
+				Convert.ToInt32(Settings.PasteClipboardTextToNewlyCreatedFile).ToString(), Main.IniFileName);
+			Win32.WritePrivateProfileString("Settings", "ShowPasteTextFromClipboardDialog",
+				Convert.ToInt32(Settings.ShowPasteTextFromClipboardDialog).ToString(), Main.IniFileName);
 		}
 
 		internal static void SaveLangs()

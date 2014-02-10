@@ -19,7 +19,7 @@ namespace AutoLangDetect
 		{
 			InitializeComponent();
 
-			if (string.IsNullOrEmpty(fileName) || fileName.StartsWith("new"))
+			if (string.IsNullOrEmpty(fileName) || Utils.IsFileNew(fileName))
 				lblQuestion.Text = string.Format("Would you like to associate inserted text of file \"{0}\" with following language?", fileName);
 			else
 				lblQuestion.Text = string.Format("Would you like to associate file \"{0}\" with following language?", Path.GetFileName(fileName));
@@ -32,16 +32,8 @@ namespace AutoLangDetect
 			btnYes.Select();
 		}
 
-		private void btnYes_Click(object sender, EventArgs e)
+		private void btnYesNo_Click(object sender, EventArgs e)
 		{
-			Close();
-		}
-
-		private void btnNo_Click(object sender, EventArgs e)
-		{
-			Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_SETCURRENTLANGTYPE,
-									0, (int)Main.LangDetector.DefaultLang.LangType);
-
 			Close();
 		}
 
@@ -55,6 +47,12 @@ namespace AutoLangDetect
 		{
 			var lang = (NppLanguage)cmbLanguage.SelectedItem;
 			Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_SETCURRENTLANGTYPE, 0, (int)lang.LangType);
+		}
+
+		private void dlgDetectLanguage_FormClosing(object sender, FormClosingEventArgs e)
+		{
+			if (DialogResult != DialogResult.Yes)
+				Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_SETCURRENTLANGTYPE, 0, (int)Main.LangDetector.DefaultLang.LangType);
 		}
 	}
 }
